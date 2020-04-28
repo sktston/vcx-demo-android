@@ -222,6 +222,9 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# Native libraries
+*.so
+
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
