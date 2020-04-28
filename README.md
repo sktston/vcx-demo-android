@@ -40,9 +40,10 @@ Update `app/src/main/res/raw/genesis_txn.txt` file with the genesis transaction 
 1. Run the Faber with a different demo application
 1. Click the `PROVISION` button to provision an agent, and initialize VCX. 
 1. Copy the invitation from the Faber, and paste it in the Invitation field of the Alice Demo Application
-1. Click the `CONNECTION REQUEST` button
-1. After connection established, issue credential from Faber demo
-1. Click the `ACCEPT OFFER` button in the Alice Demo Application, you will get a credential in a moment
+1. Click the `CONNECTION REQUEST` button, and then click the `UPDATE` button. --> Connection will be established
+1. Issue a credential from Faber demo
+1. Click the `UPDATE` button to get a credential offer from Faber. After a few momoent, Faber sends the credential. 
+1. Click the `UPDATE` button again to get a credential from the cloud agent. 
 1. In the Faber Demo, ask for proof request
-1. Click the `PRESENT PROOF` button. Faber will verify the proof and send the ack after that. 
-1. Alice Demo Application will get an ack, and you are done.
+1. Click the `UPDATE` button in the Alice demo. Alice present the proof, and Faber will verify the it and send the ack after that. 
+1. Click the `UPdATE` button in the Alice Demo. It will get an ack, and you are done.
