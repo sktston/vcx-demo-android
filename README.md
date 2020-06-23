@@ -45,5 +45,5 @@ Update `app/src/main/res/raw/genesis_txn.txt` file with the genesis transaction 
 1. Click the `UPDATE` button to get a credential offer from Faber. After a few momoent, Faber sends the credential. 
 1. Click the `UPDATE` button again to get a credential from the cloud agent. 
 1. In the Faber Demo, ask for proof request
-1. Click the `UPDATE` button in the Alice demo. Alice present the proof, and Faber will verify the it and send the ack after that. 
+1. Click the `UPDATE` button in the Alice demo. Alice present the proof, and Faber will verify it and send the ack after that. 
 1. Click the `UPdATE` button in the Alice Demo. It will get an ack, and you are done.
