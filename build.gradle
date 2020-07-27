@@ -21,7 +21,7 @@ allprojects {
         google()
         jcenter()
         maven {
-            url "https://repo.sovrin.org/repository/maven-public"
+            url "http://13.125.219.189/repository/maven-public" //skt-develop
         }
     }
 }
