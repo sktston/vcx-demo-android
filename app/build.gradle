@@ -37,9 +37,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'net.java.dev.jna:jna:4.5.2@aar'
+    implementation 'net.java.dev.jna:jna:4.5.2'
     implementation 'org.slf4j:slf4j-simple:1.7.28'
-    implementation 'com.evernym:vcx:0.8.0'
+    implementation 'com.evernym:vcx:0.8.2-sktston-SNAPSHOT'
 
     implementation 'com.google.guava:guava:28.2-android'
     implementation 'com.jayway.jsonpath:json-path:2.4.0'
