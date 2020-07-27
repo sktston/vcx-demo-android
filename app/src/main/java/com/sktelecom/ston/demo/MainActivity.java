@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
             String pwDid = ConnectionApi.connectionGetPwDid(connectionHandle).get();
 
-            WalletApi.addRecordWallet("connection", pwDid, connection).get();
+            WalletApi.addRecordWallet("connection", pwDid, connection, "").get();
 
             ConnectionApi.connectionRelease(connectionHandle);
         } catch (VcxException | ExecutionException | InterruptedException e) {
@@ -168,12 +168,15 @@ public class MainActivity extends AppCompatActivity {
             LinkedHashMap<String, Object> message = JsonPath.read(messages,"$.[0].msgs[0]");
 
             String decryptedPayload = (String)message.get("decryptedPayload");
+            String uid = (String)message.get("uid");
 
             String payloadMessage = JsonPath.read(decryptedPayload,"$.@msg");
             Log.d(TAG, "Payload message: " + payloadMessage);
 
             String type = JsonPath.read(decryptedPayload,"$.@type.name");
             Log.d(TAG, "Type: " + type);
+
+            String msgJson = "[{\"pairwiseDID\":\"" + pwDid + "\",\"uids\":[\"" + uid + "\"]}]";
 
             switch(type) {
                 //connection response or ack of proof request
@@ -213,13 +216,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case "credential-offer":
-                    handleCredentialOffer(connectionHandle, JsonPath.read(payloadMessage,"$.[0].thread_id"));
+                    handleCredentialOffer(connectionHandle, JsonPath.read(payloadMessage,"$.@id"));
+                    UtilsApi.vcxUpdateMessages("MS-106", msgJson);
                     break;
                 case "credential":
-                    handleCredential(connectionHandle, JsonPath.read(payloadMessage,"$.claim_offer_id"));
+                    handleCredential(connectionHandle, JsonPath.read(payloadMessage,"$.~thread.thid"));
                     break;
                 case "presentation-request":
-                    handlePresentationRequest(connectionHandle, JsonPath.read(payloadMessage,"$.thread_id"));
+                    handlePresentationRequest(connectionHandle, JsonPath.read(payloadMessage,"$.@id"));
+                    UtilsApi.vcxUpdateMessages("MS-106", msgJson);
                     break;
                 default:
 
@@ -238,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
         String offers = CredentialApi.credentialGetOffers(connectionHandle).get();
 
         //Create a credential object from the credential offer
-        List<String> credentialOffer = JsonPath.read(offers,"$.[0]");
+        LinkedHashMap<String, Object> credentialOffer = JsonPath.read(offers,"$.[0]");
         int credentialHandle = CredentialApi.credentialCreateWithOffer("1", JsonPath.parse(credentialOffer).jsonString()).get();
 
         //Send credential request
@@ -249,13 +254,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Serialized credential: " + prettyJson(credential));
 
         //Persist the object in the wallet
-        WalletApi.addRecordWallet("credential", threadId, credential).get();
+        WalletApi.addRecordWallet("credential", threadId, credential, "").get();
 
         CredentialApi.credentialRelease(credentialHandle);
     }
 
-    private void handleCredential(int connectionHandle, String claimOfferId) throws VcxException, ExecutionException, InterruptedException {
-        String credentialRecord = WalletApi.getRecordWallet("credential", claimOfferId, "").get();
+    private void handleCredential(int connectionHandle, String threadId) throws VcxException, ExecutionException, InterruptedException {
+        String credentialRecord = WalletApi.getRecordWallet("credential", threadId, "").get();
         String credential = JsonPath.read(credentialRecord,"$.value");
 
         //It replaces a connection handle in the credential object with a currently available one.
@@ -307,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Serialized proof: " + prettyJson(proof));
 
         //Persist the object in the wallet
-        WalletApi.addRecordWallet("proof", threadId, proof).get();
+        WalletApi.addRecordWallet("proof", threadId, proof, "").get();
 
         DisclosedProofApi.proofRelease(proofHandle);
     }
