@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -167,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             String offers = CredentialApi.credentialGetOffers(connectionHandle).get();
 
             //Create a credential object from the credential offer
-            List<String> credentialOffer = JsonPath.read(offers,"$.[0]");
+            LinkedHashMap<String, Object> credentialOffer = JsonPath.read(offers,"$.[0]");
             int credentialHandle = CredentialApi.credentialCreateWithOffer("1", JsonPath.parse(credentialOffer).jsonString()).get();
 
             //Send credential request
