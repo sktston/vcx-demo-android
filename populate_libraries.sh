@@ -45,7 +45,7 @@ download_ndk(){
         wget -O ndk_r20.zip "https://dl.google.com/android/repository/android-ndk-r20-darwin-x86_64.zip"
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         echo "Downloading NDK for Linux"
-        wget -O ndk_r21b.zip "https://dl.google.com/android/repository/android-ndk-r21b-linux-x86_64.zip"
+        wget -O ndk_r20.zip "https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip"
     fi
     unzip ndk_r20.zip
     popd 

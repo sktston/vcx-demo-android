@@ -17,17 +17,27 @@ $ ./populate_libraries.sh
 **Note**: You can change the version numbers for `libindy` and `libvcx` in the script `populate_libraries.sh`
 
 ## Native Libraries included
-All libraries will be available after running the script, but if you want to get those libraries by yourself, please refer to the below.
+All libraries will be available after running `populate_libraries.sh` script, but if you want to get those libraries by yourself, please refer to the below.
 
-- [libindy stable v1.15.0](https://repo.sovrin.org/android/libindy/stable/1.15.0/)
-- [libvcx stable v0.8.0](https://repo.sovrin.org/android/libvcx/stable/0.8.0/)
+- [libvcx v0.8.2](http://13.125.219.189/#browse/browse:libraries:android): It contains libindy v1.15.0, so you don't need to download prebuilt libindy library. 
 - [libjnidispatch v4.5.2](https://github.com/java-native-access/jna/tree/4.5.2/lib/native): You can extract `libjnidispatch.so` from `jar` file using, for example `unzip android-x86.jar libjnidispatch.so` command. Alternatively, you may get a file in the local gradle folder (You can get a location of file in the Android Studio > Project tab > expand External Libraries > expand `net.java.dev.jna:jna:4.5.2@aar` > right click on classes.jar > Reveal in Finder > they are under `jni` folder)
-- [libc++_shared r21b](https://developer.android.com/ndk/downloads): If your platform is macOS, and downloaded the latest NDK, you can get libc++_shared.so file for each ABI in the `~/Library/Android/sdk/ndk/21.1.6352462/sources/cxx-stl/llvm-libc++/libs` folder
+- [libc++_shared r21](https://developer.android.com/ndk/downloads): If your platform is macOS, and downloaded the latest NDK, you can get libc++_shared.so file for each ABI in the `~/Library/Android/sdk/ndk/21.1.6352462/sources/cxx-stl/llvm-libc++/libs` folder
+
+**Note**: The prebuilt library of `libvcx.so` is built/hosted by [SK Telecom](https://www.sktelecom.com/index_en.html), and it contains several open PRs which introduce new APIs and bug fixes in [indy-sdk](https://github.com/hyperledger/indy-sdk)
+
+- [#2156](https://github.com/hyperledger/indy-sdk/pull/2156): LibVCX fixes in Java wrapper 
+- [#2160](https://github.com/hyperledger/indy-sdk/pull/2160): Add VCX Java demo (this PR includes critical bug fixes)  
+- [#2161](https://github.com/hyperledger/indy-sdk/pull/2161): LibVCX Android Demo for Alice 
+- [#2177](https://github.com/hyperledger/indy-sdk/pull/2177): Add revoke credential API to VCX Java wrapper 
+- [#2178](https://github.com/hyperledger/indy-sdk/pull/2178): Add update webhookurl API to VCX Java wrapper 
+- [#2195](https://github.com/hyperledger/indy-sdk/pull/2195): LibVCX iOS wrapper updates 
+- [#2201](https://github.com/hyperledger/indy-sdk/pull/2201): Fix build error due to incorrect path 
+- [#2209](https://github.com/hyperledger/indy-sdk/pull/2209): VCX Wallet APIs 
 
 ## Steps to run Demo
 
 #### Cloud Agent
-You would like to start [Dummy Cloud Agent](https://github.com/hyperledger/indy-sdk/tree/master/vcx/dummy-cloud-agent) in the remote host with a specific IP address rather than localhost, or you need to modify the `serviceEndPoint` of invitation from Faber to 10.0.2.2 which is the localhost of the Android simulator. 
+You would like to start [NodeVCXAgency](https://github.com/AbsaOSS/vcxagencynode) or [Dummy Cloud Agent](https://github.com/hyperledger/indy-sdk/tree/master/vcx/dummy-cloud-agent) in the remote host with a specific IP address rather than localhost, or you need to modify the `serviceEndPoint` of invitation from Faber to 10.0.2.2 which is the localhost of the Android simulator. 
 
 Update the `agncy_url` field in the `app/src/main/res/raw/provision_config.json` file with your cloud agent's url
 
