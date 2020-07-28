@@ -217,14 +217,14 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case "credential-offer":
                     handleCredentialOffer(connectionHandle, JsonPath.read(payloadMessage,"$.@id"));
-                    UtilsApi.vcxUpdateMessages("MS-106", msgJson);
+                    UtilsApi.vcxUpdateMessages("MS-106", msgJson).get();
                     break;
                 case "credential":
                     handleCredential(connectionHandle, JsonPath.read(payloadMessage,"$.~thread.thid"));
                     break;
                 case "presentation-request":
                     handlePresentationRequest(connectionHandle, JsonPath.read(payloadMessage,"$.@id"));
-                    UtilsApi.vcxUpdateMessages("MS-106", msgJson);
+                    UtilsApi.vcxUpdateMessages("MS-106", msgJson).get();
                     break;
                 default:
 
