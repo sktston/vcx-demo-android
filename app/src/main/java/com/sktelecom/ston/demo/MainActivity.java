@@ -176,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
             String type = JsonPath.read(decryptedPayload,"$.@type.name");
             Log.d(TAG, "Type: " + type);
 
+            //msgJson is going to be used to update the message state in agency
             String msgJson = "[{\"pairwiseDID\":\"" + pwDid + "\",\"uids\":[\"" + uid + "\"]}]";
 
             switch(type) {
