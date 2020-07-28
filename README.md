@@ -30,9 +30,7 @@ All libraries will be available after running `populate_libraries.sh` script, bu
 - [#2161](https://github.com/hyperledger/indy-sdk/pull/2161): LibVCX Android Demo for Alice 
 - [#2177](https://github.com/hyperledger/indy-sdk/pull/2177): Add revoke credential API to VCX Java wrapper 
 - [#2178](https://github.com/hyperledger/indy-sdk/pull/2178): Add update webhookurl API to VCX Java wrapper 
-- [#2195](https://github.com/hyperledger/indy-sdk/pull/2195): LibVCX iOS wrapper updates 
 - [#2201](https://github.com/hyperledger/indy-sdk/pull/2201): Fix build error due to incorrect path 
-- [#2209](https://github.com/hyperledger/indy-sdk/pull/2209): VCX Wallet APIs 
 
 ## Steps to run Demo
 
