@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "VCX";
     private static final String CONFIG = "provision_config";
+    private String pwDid = "";
 
     SharedPreferences sharedPref;
 
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             String connection = ConnectionApi.connectionSerialize(connectionHandle).get();
             Log.d(TAG, "Serialized connection: " + prettyJson(connection));
 
-            String pwDid = ConnectionApi.connectionGetPwDid(connectionHandle).get();
+            pwDid = ConnectionApi.connectionGetPwDid(connectionHandle).get();
 
             WalletApi.addRecordWallet("connection", pwDid, connection, "").get();
 
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
     public void onUpdateClicked (View v) {
         String messages = null;
         try {
-            messages = UtilsApi.vcxGetMessages("MS-103", null, null).get();
+            messages = UtilsApi.vcxGetMessages("MS-103", null, pwDid).get();
             Log.d(TAG, "Messages: " + messages);
 
             String pwDid = JsonPath.read(messages,"$.[0].pairwiseDID");
