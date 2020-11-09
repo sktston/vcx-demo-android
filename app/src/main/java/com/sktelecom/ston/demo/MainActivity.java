@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             CredentialApi.credentialSendRequest(credentialHandle, connectionHandle, 0).get();
 
             //Poll agency and accept credential offer from faber
-            int state = CredentialApi.credentialUpdateState(credentialHandle).get();
+            int state = CredentialApi.credentialUpdateStateV2(credentialHandle, connectionHandle).get();
             while (state != 4) {
                 try {
                     Thread.sleep(2 * 1000);
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                     Thread.currentThread().interrupt();
                 }
 
-                state = CredentialApi.credentialUpdateState(credentialHandle).get();
+                state = CredentialApi.credentialUpdateStateV2(credentialHandle, connectionHandle).get();
             }
 
             String jsonString = CredentialApi.credentialSerialize(credentialHandle).get();
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             DisclosedProofApi.proofGenerate(proofHandle, ctx.jsonString(), "{}").get();
             DisclosedProofApi.proofSend(proofHandle, connectionHandle).get();
 
-            int state = DisclosedProofApi.proofUpdateState(proofHandle).get();
+            int state = DisclosedProofApi.proofUpdateStateV2(proofHandle, connectionHandle).get();
             while (state != 4) {
                 try {
                     Thread.sleep(2 * 1000);
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                     Thread.currentThread().interrupt();
                 }
 
-                state = DisclosedProofApi.proofUpdateState(proofHandle).get();
+                state = DisclosedProofApi.proofUpdateStateV2(proofHandle, connectionHandle).get();
             }
 
             String serializedProof = DisclosedProofApi.proofSerialize(proofHandle).get();
