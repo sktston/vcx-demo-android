@@ -4,7 +4,7 @@ workdir=output
 jnadir=${workdir}/jna
 libsdir=${workdir}/libs
 jniLibs=${workdir}/jniLibs
-vcx_version=0.12.0
+vcx_version=0.13.1
 
 # mkdir -p ${jniLibs}/armeabi-v7a
 # mkdir -p ${jniLibs}/arm64-v8a

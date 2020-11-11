@@ -5,6 +5,5 @@
   "wallet_name": "alice_wallet",
   "wallet_key": "123",
   "payment_method": "null",
-  "enterprise_seed": "000000000000000000000000Trustee1",
-  "protocol_type": "4.0"
+  "enterprise_seed": "000000000000000000000000Trustee1"
 }
