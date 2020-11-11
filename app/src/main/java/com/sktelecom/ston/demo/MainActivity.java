@@ -20,7 +20,6 @@ import com.evernym.sdk.vcx.utils.UtilsApi;
 import com.evernym.sdk.vcx.vcx.VcxApi;
 import com.evernym.sdk.vcx.wallet.WalletApi;
 import com.google.common.io.Files;
-import com.google.common.primitives.UnsignedInts;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
@@ -33,10 +32,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String CONNECTION_RESPONSE = "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/response";
+    private static final String CREDENTIAL_OFFER = "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/offer-credential";
+    private static final String CREDENTIAL_ISSUED = "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/issue-credential";
+    private static final String PRESENTATION_REQUEST = "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/request-presentation";
+    private static final String PRESENTATION_ACK = "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/ack";
 
     private static final String TAG = "VCX";
     private static final String CONFIG = "provision_config";
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Control logs from libvcx (Make a log level to TRACE if you want to see all logs from Rust)
+        //Control logs from vcx (Make a log level to TRACE if you want to see all logs from Rust)
         System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "ERROR");
 
         try {
@@ -68,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPref.contains(CONFIG)) {
             String config = sharedPref.getString(CONFIG, "");
 
-            //Initialize libvcx with configuration
+            //Initialize vcx with configuration
             try {
                 int state = VcxApi.vcxInitWithConfig(config).get();
                 Log.d(TAG, "Init with config: " + VcxApi.vcxErrorCMessage(state));
@@ -115,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         ctx.set("$.genesis_path", poolConfig.getAbsolutePath());
         Log.d(TAG, "New config: " + prettyJson(ctx.jsonString()));
 
-        //Initialize libvcx with new configuration
+        //Initialize vcx with new configuration
         try {
             int state = VcxApi.vcxInitWithConfig(ctx.jsonString()).get();
             Log.d(TAG, "Init with config: " + VcxApi.vcxErrorCMessage(state));
@@ -168,65 +172,51 @@ public class MainActivity extends AppCompatActivity {
 
             LinkedHashMap<String, Object> message = JsonPath.read(messages,"$.[0].msgs[0]");
 
-            String decryptedPayload = (String)message.get("decryptedPayload");
+            String decryptedMsg = (String)message.get("decryptedMsg");
             String uid = (String)message.get("uid");
 
-            String payloadMessage = JsonPath.read(decryptedPayload,"$.@msg");
-            Log.d(TAG, "Payload message: " + payloadMessage);
+            Log.d(TAG, "Decrypted message: " + decryptedMsg);
 
-            String type = JsonPath.read(decryptedPayload,"$.@type.name");
+            String type = JsonPath.read(decryptedMsg,"$.@type");
             Log.d(TAG, "Type: " + type);
 
             //msgJson is going to be used to update the message state in agency
             String msgJson = "[{\"pairwiseDID\":\"" + pwDid + "\",\"uids\":[\"" + uid + "\"]}]";
 
             switch(type) {
-                //connection response or ack of proof request
-                case "aries":
-                    String innerType = JsonPath.read(payloadMessage,"$.@type");
+                case CONNECTION_RESPONSE:
+                    int state = ConnectionApi.vcxConnectionUpdateState(connectionHandle).get();
 
-                    //connection response
-                    if(innerType.equals("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/response")){
-                        int state = ConnectionApi.vcxConnectionUpdateState(connectionHandle).get();
-
-                        if (state == 4) {
-                            connection = ConnectionApi.connectionSerialize(connectionHandle).get();
-                            Log.d(TAG, "Serialized connection: " + prettyJson(connection));
-                            WalletApi.updateRecordWallet("connection", pwDid, connection).get();
-                        }
-                    }
-                    //ack of proof request
-                    else if (innerType.equals("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/ack")){
-                        String threadId = JsonPath.read(payloadMessage,"$.~thread.thid");
-                        String proofRecord = WalletApi.getRecordWallet("proof", threadId, "").get();
-                        String proof = JsonPath.read(proofRecord,"$.value");
-
-                        //It replaces a connection handle in the proof object with a currently available one.
-                        //There should be a better way to handle this issue.
-                        proof = JsonPath.parse(proof)
-                                .set("$.data.prover_sm.state.PresentationSent.connection_handle", UnsignedInts.toLong(connectionHandle))
-                                .jsonString();
-
-                        int proofHandle = DisclosedProofApi.proofDeserialize(proof).get();
-                        int state = DisclosedProofApi.proofUpdateState(proofHandle).get();
-
-                        if (state == 4) {
-                            Log.d(TAG, "Proof is OK");
-                        }
-
-                        DisclosedProofApi.proofRelease(proofHandle);
+                    if (state == 4) {
+                        connection = ConnectionApi.connectionSerialize(connectionHandle).get();
+                        Log.d(TAG, "Serialized connection: " + prettyJson(connection));
+                        WalletApi.updateRecordWallet("connection", pwDid, connection).get();
                     }
                     break;
-                case "credential-offer":
-                    handleCredentialOffer(connectionHandle, JsonPath.read(payloadMessage,"$.@id"));
+                case CREDENTIAL_OFFER:
+                    handleCredentialOffer(connectionHandle, JsonPath.read(decryptedMsg,"$.@id"));
                     UtilsApi.vcxUpdateMessages("MS-106", msgJson).get();
                     break;
-                case "credential":
-                    handleCredential(connectionHandle, JsonPath.read(payloadMessage,"$.~thread.thid"));
+                case CREDENTIAL_ISSUED:
+                    handleCredential(connectionHandle, JsonPath.read(decryptedMsg,"$.~thread.thid"));
                     break;
-                case "presentation-request":
-                    handlePresentationRequest(connectionHandle, JsonPath.read(payloadMessage,"$.@id"));
+                case PRESENTATION_REQUEST:
+                    handlePresentationRequest(connectionHandle, JsonPath.read(decryptedMsg,"$.@id"));
                     UtilsApi.vcxUpdateMessages("MS-106", msgJson).get();
+                    break;
+                case PRESENTATION_ACK:
+                    String threadId = JsonPath.read(decryptedMsg,"$.~thread.thid");
+                    String proofRecord = WalletApi.getRecordWallet("proof", threadId, "").get();
+                    String proof = JsonPath.read(proofRecord,"$.value");
+
+                    int proofHandle = DisclosedProofApi.proofDeserialize(proof).get();
+                    state = DisclosedProofApi.proofUpdateStateV2(proofHandle, connectionHandle).get();
+
+                    if (state == 4) {
+                        Log.d(TAG, "Proof is OK");
+                    }
+
+                    DisclosedProofApi.proofRelease(proofHandle);
                     break;
                 default:
 
@@ -265,16 +255,10 @@ public class MainActivity extends AppCompatActivity {
         String credentialRecord = WalletApi.getRecordWallet("credential", threadId, "").get();
         String credential = JsonPath.read(credentialRecord,"$.value");
 
-        //It replaces a connection handle in the credential object with a currently available one.
-        //There should be a better way to handle this issue.
-        credential = JsonPath.parse(credential)
-                .set("$.data.holder_sm.state.RequestSent.connection_handle", UnsignedInts.toLong(connectionHandle))
-                .jsonString();
-
         int credentialHandle = CredentialApi.credentialDeserialize(credential).get();
         Log.d(TAG, "credentialHandle: " + credentialHandle);
 
-        int state = CredentialApi.credentialUpdateState(credentialHandle).get();
+        int state = CredentialApi.credentialUpdateStateV2(credentialHandle, connectionHandle).get();
 
         if (state == 4){
             credential = CredentialApi.credentialSerialize(credentialHandle).get();
