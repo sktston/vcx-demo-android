@@ -74,8 +74,11 @@ public class MainActivity extends AppCompatActivity {
 
             //Initialize vcx with configuration
             try {
-                int state = VcxApi.vcxInitWithConfig(config).get();
-                Log.d(TAG, "Init with config: " + VcxApi.vcxErrorCMessage(state));
+                VcxApi.vcxInitCore(config);
+                VcxApi.vcxOpenPool().get();
+                VcxApi.vcxOpenWallet().get();
+                Log.d(TAG, "VCX is initialized");
+
             } catch (VcxException | InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -121,8 +124,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Initialize vcx with new configuration
         try {
-            int state = VcxApi.vcxInitWithConfig(ctx.jsonString()).get();
-            Log.d(TAG, "Init with config: " + VcxApi.vcxErrorCMessage(state));
+            VcxApi.vcxInitCore(ctx.jsonString());
+            VcxApi.vcxOpenPool().get();
+            VcxApi.vcxOpenWallet().get();
+            Log.d(TAG, "VCX is initialized");
         } catch (VcxException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
