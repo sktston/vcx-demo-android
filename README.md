@@ -19,7 +19,7 @@ $ ./populate_libraries.sh
 ## Native Libraries included
 All libraries will be available after running `populate_libraries.sh` script, but if you want to get those libraries by yourself, please refer to the below.
 
-- [vcx v0.14.0](https://github.com/hyperledger/aries-vcx/releases/tag/0.14.0): It contains libindy v1.15.0, so you don't need to download prebuilt libindy library. 
+- [vcx v0.14.0-1374](https://github.com/hyperledger/aries-vcx/releases/tag/0.14.0-1374): It contains libindy v1.15.0, so you don't need to download prebuilt libindy library. 
 - [libjnidispatch v4.5.2](https://github.com/java-native-access/jna/tree/4.5.2/lib/native): You can extract `libjnidispatch.so` from `jar` file using, for example `unzip android-x86.jar libjnidispatch.so` command. Alternatively, you may get a file in the local gradle folder (You can get a location of file in the Android Studio > Project tab > expand External Libraries > expand `net.java.dev.jna:jna:4.5.2@aar` > right click on classes.jar > Reveal in Finder > they are under `jni` folder)
 - [libc++_shared r21](https://developer.android.com/ndk/downloads): If your platform is macOS, and downloaded the latest NDK, you can get libc++_shared.so file for each ABI in the `~/Library/Android/sdk/ndk/21.1.6352462/sources/cxx-stl/llvm-libc++/libs` folder
 
